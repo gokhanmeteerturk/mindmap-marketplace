@@ -12,24 +12,34 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import LocalGroceryStoreTwoToneIcon from '@mui/icons-material/LocalGroceryStoreTwoTone';import MenuIcon from '@mui/icons-material/Menu';
+import LocalGroceryStoreTwoToneIcon from '@mui/icons-material/LocalGroceryStoreTwoTone';
+import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import InfoTwoToneIcon from '@mui/icons-material/InfoTwoTone';
-import {Link, useLocation} from "react-router-dom";
-const drawerWidth = 240;
-import { Routes, Route } from 'react-router-dom'
-import Home from '../pages/Home'
-import About from '../pages/About'
-import Create from '../pages/Create'
+import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
+import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
+import {Link, useLocation, useNavigate} from "react-router-dom";
+import { Routes, Route } from 'react-router-dom';
+import Home from '../pages/Home';
+import About from '../pages/About';
+import Login from '../pages/Login';
+import Create from '../pages/Create';
+import { AuthProvider, AuthContext } from '../context/AuthContext';
+import PrivateRoute from '../components/PrivateRoute';
+import { useContext } from 'react';
 
-function Navbar(props) {
+const drawerWidth = 240;
+
+function NavbarContent (props) {
+  const { user, logout } = useContext(AuthContext);
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
-
+  const navigate = useNavigate();
   const location = useLocation();
   const path = location.pathname;
+
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -51,35 +61,58 @@ function Navbar(props) {
       <Toolbar />
       <Divider />
       <List>
-          <ListItem key={"Home"} disablePadding>
-            <ListItemButton component={Link} to={"/"} selected={"/" === path}>
+        <ListItem key={"Home"} disablePadding>
+          <ListItemButton component={Link} to={"/"} selected={"/" === path}>
+            <ListItemIcon>
+              <LocalGroceryStoreTwoToneIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={"Marketplace"} />
+          </ListItemButton>
+        </ListItem>
+        <ListItem key={"About"} disablePadding>
+          <ListItemButton component={Link} to={"/about"} selected={"/about" === path}>
+            <ListItemIcon>
+              <InfoTwoToneIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={"About"} />
+          </ListItemButton>
+        </ListItem>
+        {user && (
+        <ListItem key={"Create"} disablePadding>
+          <ListItemButton component={Link} to={"/create"} selected={"/create" === path}>
+            <ListItemIcon>
+              <ControlPointTwoToneIcon color="primary" />
+            </ListItemIcon>
+            <ListItemText primary={"Create"} />
+          </ListItemButton>
+        </ListItem>
+      )}
+      </List>
+      <Divider />
+      <List>
+        {user ? (
+          <ListItem key={"Logout"} disablePadding>
+            <ListItemButton onClick={logout}>
               <ListItemIcon>
-                <LocalGroceryStoreTwoToneIcon color="primary" />
+                <LogoutTwoToneIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={"Marketplace"} />
+              <ListItemText primary={"Logout"} />
             </ListItemButton>
           </ListItem>
-          <ListItem key={"About"} disablePadding>
-            <ListItemButton component={Link} to={"/about"} selected={"/about" === path}>
+        ) : (
+          <ListItem key={"Login"} disablePadding>
+            <ListItemButton component={Link} to={"/login"} selected={"/login" === path}>
               <ListItemIcon>
-                <InfoTwoToneIcon color="primary" />
+                <LoginTwoToneIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary={"About"} />
+              <ListItemText primary={"Login"} />
             </ListItemButton>
           </ListItem>
-          <ListItem key={"Create"} disablePadding>
-            <ListItemButton component={Link} to={"/create"} selected={"/create" === path}>
-              <ListItemIcon>
-                <ControlPointTwoToneIcon color="primary" />
-              </ListItemIcon>
-              <ListItemText primary={"Create"} />
-            </ListItemButton>
-          </ListItem>
+        )}
       </List>
     </div>
   );
 
-  // Remove this const when copying and pasting into your project.
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
@@ -103,8 +136,10 @@ function Navbar(props) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            { path === "/" ? "Marketplace" : path === "/about" ? "About" : "Create" }
-
+            {path === "/" ? "Marketplace" : 
+             path === "/about" ? "About" : 
+             path === "/create" ? "Create" :
+             path === "/login" ? "Login" : ""}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -113,7 +148,6 @@ function Navbar(props) {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           container={container}
           variant="temporary"
@@ -121,7 +155,7 @@ function Navbar(props) {
           onTransitionEnd={handleDrawerTransitionEnd}
           onClose={handleDrawerClose}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
@@ -146,22 +180,29 @@ function Navbar(props) {
         sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
-    <Routes>
-      <Route path='/' element={<Home />} />
-      <Route path='/about' element={<About />} />
-      <Route path='/create' element={<Create />} />
-    </Routes>
-
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/create' element={
+            <PrivateRoute>
+              <Create />
+            </PrivateRoute>
+          } />
+          <Route path='/login' element={<Login />} />
+        </Routes>
       </Box>
     </Box>
   );
 }
 
+const Navbar = () => {
+  return (
+    <AuthProvider>
+      <NavbarContent />
+    </AuthProvider>
+  );
+};
 Navbar.propTypes = {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * Remove this when copying and pasting into your project.
-   */
   window: PropTypes.func,
 };
 
