@@ -10,6 +10,8 @@ class MindMap(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    nodes = models.TextField(blank=False, null=False, default="")
+    edges = models.TextField(blank=False, null=False, default="")
 
     def __str__(self):
          return self.name
