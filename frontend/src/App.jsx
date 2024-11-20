@@ -1,14 +1,31 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import Navbar from './components/Navbar';
+// import Footer from './components/Footer'
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#007bed'
+    }
+  },
+});
 function App() {
   // const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>Hi.</div>
+    <ThemeProvider theme={darkTheme}>
+    <CssBaseline />
+    <Navbar></Navbar>
+    </ThemeProvider>
     </>
   )
 }
