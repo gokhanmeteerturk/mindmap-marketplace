@@ -1,8 +1,13 @@
 from django.urls import path
+from .views import *
 
-from .views import home
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('mindmap', MindMapViewSet, basename='mindmap')
+
 urlpatterns = [
-    path('', home, name='home'),
-    # path('about/', views.about, name='about'),
+     path('', home, name='home'),
 
 ]
+urlpatterns += router.urls
