@@ -15,12 +15,14 @@ import {
 import { AccountCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import MindmapPreview from '../components/MindmapPreview';
+import { useCart } from '../context/CartContext';
 
 const Home = () => {
   const [mindmaps, setMindmaps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchMindmaps = async () => {
@@ -100,7 +102,7 @@ const Home = () => {
     </Box>
 
     <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-      Created: {formatDate(mindmap.added_date)}
+      Published: {formatDate(mindmap.added_date)}
     </Typography>
 
     {/* Add the preview here */}
@@ -124,15 +126,22 @@ const Home = () => {
     </Box>
   </CardContent>
   
-  <CardActions sx={{ p: 2, pt: 0 }}>
-    <Button 
-      size="medium" 
-      variant="contained"
-      onClick={() => navigate(`/mindmap/${mindmap.id}`)}
-    >
-      ADD TO CART
-    </Button>
-  </CardActions>
+  <CardActions sx={{ p: 2, pt: 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <Typography variant="body1" sx={{ mt: 0, fontWeight: 'bold', color: '#52abff' }}>
+    {mindmap.price_gbp} GBP
+  </Typography>
+<Button 
+  size="medium" 
+  variant="contained"
+  onClick={() => {
+    addToCart(mindmap);
+    // Optional: Add a success notification here
+  }}
+>
+  ADD TO CART
+</Button>
+</CardActions>
+
 </Card>
             </Grid>
           ))}

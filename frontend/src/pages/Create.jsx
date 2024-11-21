@@ -27,6 +27,7 @@ const Create = () => {
     defaultValues: {
       name: '',
       description: '',
+      price_gbp: '',
       nodes: '',
       edges: ''
     }
@@ -126,6 +127,22 @@ const Create = () => {
             helperText={errors.description?.message}
             disabled={isLoading}
           />
+
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Price (GBP)"
+            type="number"
+            {...register('price_gbp', {
+              required: 'Price is required',
+              min: { value: 1.0, message: 'Price must be at least 1.0' },
+              max: { value: 40.0, message: 'Price must be at most 40.0' },
+            })}
+            error={!!errors.price_gbp}
+            helperText={errors.price_gbp?.message}
+            disabled={isLoading}
+          />
+
 
           <TextField
             margin="normal"

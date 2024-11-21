@@ -28,6 +28,10 @@ import Create from '../pages/Create';
 import { AuthProvider, AuthContext } from '../context/AuthContext';
 import PrivateRoute from '../components/PrivateRoute';
 import { useContext } from 'react';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Badge from '@mui/material/Badge';
+import CartPopover from '../components/CartPopover';
+import { CartProvider, useCart } from '../context/CartContext';
 
 const drawerWidth = 240;
 
@@ -40,12 +44,22 @@ function NavbarContent (props) {
   const location = useLocation();
   const path = location.pathname;
 
+  // Inside NavbarContent component, add these lines before the return statement
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const { cart } = useCart();
 
   const handleDrawerClose = () => {
     setIsClosing(true);
     setMobileOpen(false);
   };
 
+  const handleCartClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleCartClose = () => {
+    setAnchorEl(null);
+  };
   const handleDrawerTransitionEnd = () => {
     setIsClosing(false);
   };
@@ -135,12 +149,28 @@ function NavbarContent (props) {
           >
             <MenuIcon />
           </IconButton>
+
           <Typography variant="h6" noWrap component="div">
-            {path === "/" ? "Marketplace" : 
+            {path === "/" ? "Mindmaps Marketplace" : 
              path === "/about" ? "About" : 
              path === "/create" ? "Create" :
              path === "/login" ? "Login" : ""}
           </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+<IconButton
+  color="inherit"
+  onClick={handleCartClick}
+  sx={{ ml: 2 }}
+>
+  <Badge badgeContent={cart.length} color="error">
+    <ShoppingCartIcon />
+  </Badge>
+</IconButton>
+<CartPopover
+  anchorEl={anchorEl}
+  open={Boolean(anchorEl)}
+  onClose={handleCartClose}
+/>
         </Toolbar>
       </AppBar>
       <Box
@@ -198,7 +228,10 @@ function NavbarContent (props) {
 const Navbar = () => {
   return (
     <AuthProvider>
+      <CartProvider>
       <NavbarContent />
+       </CartProvider>
+
     </AuthProvider>
   );
 };
