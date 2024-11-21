@@ -26,7 +26,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "*"
+    "https://purple-coast-012cbe703.5.azurestaticapps.net"
 ]
 
 STORAGES = {
