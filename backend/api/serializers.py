@@ -18,8 +18,8 @@ class MindMapSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MindMap
-        fields = ['name', 'description', 'author', 'nodes', 'edges']
-        read_only_fields = ['author']
+        fields = ['id', 'name', 'description', 'added_date', 'author', 'nodes', 'edges', 'price_gbp']  # Include `id` field
+        read_only_fields = ['id', 'author', 'added_date']
 
     def to_representation(self, instance):
         """
@@ -28,7 +28,6 @@ class MindMapSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         request = self.context.get('request')
         if request and request.parser_context['view'].action != 'list':
-            # If not 'list', replace author with the ID
             representation['author'] = instance.author.id
         return representation
 
@@ -44,5 +43,6 @@ class MindMapSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.nodes = validated_data.get('nodes', instance.nodes)
         instance.edges = validated_data.get('edges', instance.edges)
+        instance.edges = validated_data.get('price_gbp', instance.edges)
         instance.save()
         return instance

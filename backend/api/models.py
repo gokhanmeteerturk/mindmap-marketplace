@@ -12,6 +12,7 @@ class MindMap(models.Model):
     )
     nodes = models.TextField(blank=False, null=False, default="")
     edges = models.TextField(blank=False, null=False, default="")
+    price_gbp = models.DecimalField(max_digits=5, decimal_places=2, default=5.50, null=False, blank=False)
 
     def __str__(self):
          return self.name
